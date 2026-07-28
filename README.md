@@ -422,24 +422,6 @@ The workflow is lightweight, extensible, and can easily be integrated with diffe
 
 ---
 
-# 🚀 Future Improvements
-
-- Support screenshots and attachments
-- Version history for bug drafts
-- AI-generated reproduction steps
-- Auto-detect priority
-- Predict severity level
-- Suggest labels and components
-- Duplicate bug detection
-- Multi-language support
-- Slack integration
-- Microsoft Teams integration
-- Draft approval notifications
-- Role-based approval workflow
-- AI-generated test cases from bug reports
-
----
-
 # 🤝 Contributing
 
 Contributions are always welcome!
