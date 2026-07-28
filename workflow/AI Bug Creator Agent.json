@@ -14,77 +14,12 @@
       "type": "@n8n/n8n-nodes-langchain.chatTrigger",
       "typeVersion": 1.4,
       "position": [
-        -2064,
-        -608
+        -4544,
+        -1280
       ],
       "id": "872f6103-bb07-459a-a6ac-ee29975aeed7",
       "name": "When chat message received",
       "webhookId": "9fa3cb62-20e8-4e6d-a8ea-f037d63d37d1"
-    },
-    {
-      "parameters": {
-        "promptType": "define",
-        "text": "={{ $json.chatInput }}",
-        "hasOutputParser": true,
-        "options": {
-          "systemMessage": "You are a Senior QA Engineer and Bug Reporting Assistant.\n\nYour job is to analyze reported software bugs and maintain ONE professional Jira Bug Draft throughout the conversation.\n\nThe goal is to produce bug reports that are immediately useful for developers, QA engineers, and product owners without requiring additional clarification whenever possible.\n\nThe user may provide:\n- Story Key\n- Bug description\n- Expected Result\n- Actual Result\n- Screenshot\n- Additional notes\n\n--------------------------------------------------\nPrimary Responsibilities\n--------------------------------------------------\n\n1. Analyze all user input.\n2. Analyze screenshots if provided.\n3. Identify the reported issue.\n4. Classify the bug type.\n5. Generate a professional Jira bug draft.\n6. Improve wording without changing the user's meaning.\n7. Expand short user reports into professional QA-ready bug reports.\n8. Infer reasonable end-user actions whenever they are obvious.\n9. Never invent technical implementation details.\n10. Suggest Severity and Priority.\n11. List only useful missing information.\n12. Maintain ONE active bug draft throughout the conversation.\n13. Never create a Jira issue yourself.\n\n--------------------------------------------------\nBug Type Classification\n--------------------------------------------------\n\nUse ONLY one of these values:\n\n- API Bug\n- Functional Bug\n- UI Bug\n- Validation Bug\n- Performance Bug\n- Security Bug\n- Other\n\nRules:\n\n- HTTP failures, API failures or invalid API responses → API Bug\n- Missing validation or incorrect business validation → Validation Bug\n- UI layout, styling, alignment or visual issues → UI Bug\n- Slow response or timeout → Performance Bug\n- Authentication or authorization vulnerabilities → Security Bug\n- Everything else → Functional Bug\n\n--------------------------------------------------\nSeverity\n--------------------------------------------------\n\nUse ONLY one value:\n\nCritical\nHigh\nMedium\nLow\n\nGuidelines:\n\nCritical\n- Production outage\n- Complete system unavailable\n- Data loss\n- Security vulnerability\n\nHigh\n- Main business flow blocked\n- No workaround\n\nMedium\n- Partial functionality affected\n- Workaround exists\n\nLow\n- Cosmetic issue\n- Minor UI issue\n- Typo\n\n--------------------------------------------------\nPriority\n--------------------------------------------------\n\nUse ONLY one value:\n\nHighest\nHigh\nMedium\nLow\nLowest\n\n--------------------------------------------------\nConversation Rules\n--------------------------------------------------\n\nThere is ONLY ONE active bug draft during the conversation.\n\nThe latest structured bug object returned by the assistant is the ONLY source of truth.\n\nNever create multiple drafts.\n\n--------------------------------------------------\nFIRST USER BUG REPORT\n--------------------------------------------------\n\nWhen the user reports a bug for the first time:\n\n- Analyze the report carefully.\n- Generate a COMPLETE Jira bug draft.\n- Populate every possible field.\n- Expand short user reports into professional QA language.\n- Generate a meaningful Summary.\n- Generate a developer-friendly Description.\n- Generate complete reproduction steps whenever possible.\n- Keep unknown information empty instead of guessing.\n\nReturn:\n\nstatus = \"draft\"\naction = \"review\"\n\n--------------------------------------------------\nFOLLOW-UP REQUESTS\n--------------------------------------------------\n\nIf a bug draft already exists:\n\nTreat the latest bug draft as the current version.\n\nWhen the user requests to:\n\n- edit\n- modify\n- improve\n- rewrite\n- change\n- add\n- remove\n- update\n\nThen:\n\n- Read the latest bug draft.\n- Copy every existing field exactly.\n- Modify ONLY the fields explicitly requested.\n- Never regenerate unrelated fields.\n- Never remove existing values.\n- Never replace values unless requested.\n- Never create another draft.\n- Preserve Story Key unless explicitly changed.\n- Preserve every other field exactly.\n\nReturn the COMPLETE updated bug object.\n\nReturn:\n\nstatus = \"updated\"\naction = \"review\"\n\n--------------------------------------------------\nCREATE REQUEST\n--------------------------------------------------\n\nIf the user sends:\n\nCreate\nCreate Bug\nSubmit\nApprove\nLooks good\nProceed\nGo ahead\n\nThen:\n\n- Read the latest bug draft.\n- Return it exactly as it exists.\n- Do NOT regenerate anything.\n- Do NOT rewrite anything.\n- Do NOT improve wording.\n- Do NOT infer missing values.\n- Do NOT modify any existing field.\n\nOnly change:\n\nstatus = \"approved\"\naction = \"create_bug\"\n\nReturn the COMPLETE bug object.\n\n--------------------------------------------------\nCANCEL REQUEST\n--------------------------------------------------\n\nIf the user wants to cancel:\n\nReturn:\n\nstatus = \"cancelled\"\naction = \"cancel\"\n\nDo not generate or modify any bug draft.\n\n--------------------------------------------------\nSummary Rules\n--------------------------------------------------\n\n- REQUIRED.\n- Never leave empty.\n- Write a professional Jira bug title.\n- The title should immediately explain the defect to a developer.\n- Clearly mention:\n  - The affected feature.\n  - The observed behavior.\n  - The context whenever relevant.\n- Improve the user's wording without changing the meaning.\n- Do not simply repeat the user's sentence.\n- Do not include assumptions.\n- Do not include root causes.\n- Do not include severity or priority.\n- The title should be specific enough that a developer understands the issue before opening the bug.\n\nExamples:\n\nGood\n\nLogin button remains unresponsive after entering valid credentials\n\nPassword reset email is not sent after submitting a valid request\n\nCheckout page returns HTTP 500 after placing an order\n\nValidation message is missing when Email field is left empty\n\nUser profile image is not updated after saving changes\n\nBad\n\nButton doesn't work\n\nLogin issue\n\nBug in Login\n\nError\n\nProblem\n\n--------------------------------------------------\nDescription Rules\n--------------------------------------------------\n\n- REQUIRED.\n- Never leave empty.\n- Write a professional Jira description.\n- Explain what the user attempted to do.\n- Explain what actually happened.\n- Explain the impact on the user or business flow whenever it is obvious.\n- Write naturally as a QA engineer.\n- Do not simply repeat the Summary.\n- Do not mention assumptions.\n- Do not mention possible root causes.\n- Do not invent technical implementation details.\n\n--------------------------------------------------\nSteps To Reproduce Rules\n--------------------------------------------------\n\n- REQUIRED whenever possible.\n- Think like a QA engineer reproducing the issue from scratch.\n- Cover the complete user journey until the issue appears.\n- Include all obvious navigation steps.\n- Include required user actions.\n- Include required user input whenever obvious.\n- The last step must always describe observing the incorrect behavior.\n- Generate as many steps as necessary to fully reproduce the issue.\n- A developer should be able to reproduce the bug using only these steps.\n\nNever invent:\n\n- API endpoints\n- SQL queries\n- Database values\n- Internal implementation\n- Root causes\n- Browser versions\n- Environment details not provided\n\n--------------------------------------------------\nExpected Result Rules\n--------------------------------------------------\n\nDescribe the correct behavior the user should experience after performing the steps.\n\n--------------------------------------------------\nActual Result Rules\n--------------------------------------------------\n\nDescribe only what actually happens.\n\nDo not mention assumptions.\n\nDo not explain why the issue happens.\n\n--------------------------------------------------\nMissing Information Rules\n--------------------------------------------------\n\nInclude only information that would genuinely help reproduce or investigate the issue.\n\nIf nothing important is missing, return an empty array.\n\n--------------------------------------------------\nGeneral Rules\n--------------------------------------------------\n\n- Always preserve Story Key.\n- Keep exactly ONE active bug draft.\n- Never overwrite unrelated fields.\n- Never regenerate the entire bug because of a small modification.\n- Never invent technical facts.\n- Use screenshots only as supporting evidence.\n- Return ALL fields defined by the Structured Output Parser.\n- Never return Markdown.\n- Never wrap the response inside ```json.\n- Never explain your reasoning.\n- Return ONLY the structured object."
-        }
-      },
-      "type": "@n8n/n8n-nodes-langchain.agent",
-      "typeVersion": 3.1,
-      "position": [
-        -1648,
-        -592
-      ],
-      "id": "b831c03c-45d3-43be-8cb1-1e3037b2f9be",
-      "name": "AI Agent"
-    },
-    {
-      "parameters": {
-        "model": "llama3.1:8b",
-        "options": {}
-      },
-      "type": "@n8n/n8n-nodes-langchain.lmChatOllama",
-      "typeVersion": 1,
-      "position": [
-        -1872,
-        -304
-      ],
-      "id": "2214cbb5-ee57-4d7d-957b-7349b94ddca3",
-      "name": "Ollama Chat Model",
-      "credentials": {
-        "ollamaApi": {
-          "id": "KIBcpzDkbdKRf0LT",
-          "name": "Ollama account"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "contextWindowLength": 20
-      },
-      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
-      "typeVersion": 1.4,
-      "position": [
-        -1600,
-        -416
-      ],
-      "id": "4e9725b7-8804-47f7-8f25-c861a3ed6f7b",
-      "name": "Simple Memory"
-    },
-    {
-      "parameters": {
-        "jsonSchemaExample": "{\n  \"status\": \"draft\",\n  \"action\": \"review\",\n  \"storyKey\": \"SCRUM-6\",\n  \"bugType\": \"API Bug\",\n  \"summary\": \"Login button triggers HTTP 500 error\",\n  \"description\": \"The login page returns an HTTP 500 Internal Server Error after clicking Login.\",\n  \"stepsToReproduce\": [\n    \"Navigate to the login page.\",\n    \"Enter valid credentials.\",\n    \"Click the Login button.\"\n  ],\n  \"expectedResult\": \"User logs in successfully.\",\n  \"actualResult\": \"HTTP 500 Internal Server Error is displayed.\",\n  \"severity\": \"High\",\n  \"priority\": \"High\",\n  \"missingInformation\": [],\n  \"nextAction\": {\n    \"allowedCommands\": [\n      \"Create\",\n      \"Edit\",\n      \"Cancel\"\n    ]\n  }\n}",
-        "autoFix": true
-      },
-      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
-      "typeVersion": 1.3,
-      "position": [
-        -1408,
-        -336
-      ],
-      "id": "3b48551f-f69f-438a-9277-fdb2ec7a57f0",
-      "name": "Structured Output Parser"
     },
     {
       "parameters": {
@@ -100,7 +35,7 @@
           "mode": "list",
           "cachedResultName": "Bug"
         },
-        "summary": "={{ $json.output.summary }}",
+        "summary": "={{ $json.title }}",
         "additionalFields": {
           "assignee": {
             "__rl": true,
@@ -108,28 +43,28 @@
             "mode": "list",
             "cachedResultName": "Abdulrahman Talaat"
           },
-          "description": "={{\n`Description:\n${$json.output.description}\n\nSteps to Reproduce:\n${($json.output.stepsToReproduce || []).map((s, i) => `${i + 1}. ${s}`).join('\\n')}\n\nExpected Result:\n${$json.output.expectedResult}\n\nActual Result:\n${$json.output.actualResult}\n\nSeverity:\n${$json.output.severity}`\n}}",
-          "parentIssueKey": "={{ $json.output.storyKey }}",
+          "description": "=h2. Description\n\n{{$json.description}}\n\n----\n\nh2. BugType\n\n{{$json.bugType}}\n\n----\nh2. Steps To Reproduce\n\n{{$json.steps}}\n\n----\n\nh2. Actual Result\n\n{{$json.actual}}\n\n----\n\nh2. Expected Result\n\n{{$json.expected}}\n\n----\n\nh2. Severity\n\n{{$json.severity}}",
+          "parentIssueKey": "={{ $json.storykey }}",
           "priority": {
             "__rl": true,
-            "value": "={{\n{\n  \"Highest\": \"1\",\n  \"High\": \"2\",\n  \"Medium\": \"3\",\n  \"Low\": \"4\",\n  \"Lowest\": \"5\"\n}[$json.output.priority]\n}}",
+            "value": "={{ {   \"Highest\": \"1\",   \"High\": \"2\",   \"Medium\": \"3\",   \"Low\": \"4\",   \"Lowest\": \"5\" }[$json.priority] }}",
             "mode": "id"
           },
           "reporter": {
             "__rl": true,
-            "value": "641c0346af3b93d8ecf38bf9",
+            "value": "557058:f58131cb-b67d-43c7-b30d-6b58d40bd077",
             "mode": "list",
-            "cachedResultName": "Abdulrahman Talaat"
+            "cachedResultName": "Automation for Jira"
           }
         }
       },
       "type": "n8n-nodes-base.jira",
       "typeVersion": 1,
       "position": [
-        -976,
-        -512
+        -3136,
+        -928
       ],
-      "id": "183f53ae-bfde-4598-bf57-3980d53a85d0",
+      "id": "25cf581b-367e-40b4-9c10-8d4bf00f679c",
       "name": "Create an issue",
       "credentials": {
         "jiraSoftwareCloudApi": {
@@ -140,22 +75,438 @@
     },
     {
       "parameters": {
+        "jsCode": "const input = $input.first().json;\n\n// If the AI returned a JSON string inside \"output\" (Generate mode)\nif (typeof input.output === 'string') {\n  const start = input.output.indexOf('{');\n  const end = input.output.lastIndexOf('}');\n\n  if (start === -1 || end === -1) {\n    throw new Error('No JSON found');\n  }\n\n  return [\n    {\n      json: JSON.parse(input.output.substring(start, end + 1)),\n    },\n  ];\n}\n\n// Otherwise (Update / Approve), the data is already JSON\nreturn [\n  {\n    json: input,\n  },\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -2640,
+        -1456
+      ],
+      "id": "99d6a03e-9f24-4c8d-a5fb-b76d9e045ada",
+      "name": "Code in JavaScript1"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{$json.chatInput.toLowerCase()}}",
+                    "rightValue": "=generate",
+                    "operator": {
+                      "type": "string",
+                      "operation": "startsWith"
+                    },
+                    "id": "d3e709f8-5c03-40fa-8d83-8b298d122016"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "990a1969-4fe4-4a31-83e5-add79ca774a7",
+                    "leftValue": "={{$json.command}}",
+                    "rightValue": "=update",
+                    "operator": {
+                      "type": "string",
+                      "operation": "startsWith"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "19d659d2-d0db-4314-8e48-5fbffb1f48aa",
+                    "leftValue": "={{$json.chatInput.toLowerCase()}}",
+                    "rightValue": "=approve",
+                    "operator": {
+                      "type": "string",
+                      "operation": "startsWith"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        -4016,
+        -1232
+      ],
+      "id": "a6d21a86-9a35-4069-bcef-308d56af9e28",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "title",
+        "include": "allOtherFields",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        -3456,
+        -912
+      ],
+      "id": "ad6a6a5d-0765-4315-be5d-3c3629026b8b",
+      "name": "Split - TC to Items"
+    },
+    {
+      "parameters": {
+        "jsCode": "const item = $input.first();\nconst json = item.json;\n\nconst cleaned = (json.chatInput || \"\").trim();\n\nconst lower = cleaned.toLowerCase();\n\nlet command = null;\nlet comment = \"\";\n\nif (lower.startsWith(\"approve\")) {\n  command = \"approve\";\n} else if (lower.startsWith(\"update\")) {\n  command = \"update\";\n\n  comment = cleaned\n    .replace(/^update\\s+/i, \"\")\n    .replace(/[a-z]+-\\d+/i, \"\")\n    .trim();\n}\n\n// استخراج الـ Story Key سواء كانت حروف كبيرة أو صغيرة\nconst storyKeyMatch = cleaned.match(/[a-z]+-\\d+/i);\n\nconst storyKey = storyKeyMatch\n  ? storyKeyMatch[0].toUpperCase()\n  : null;\n\nreturn [\n  {\n    json: {\n      ...json,\n      chatInput: cleaned,\n      command,\n      storyKey,\n      comment,\n    },\n  },\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -4288,
+        -1248
+      ],
+      "id": "818298dd-06a3-41ee-b757-f3a66ced8e02",
+      "name": "Parse Message"
+    },
+    {
+      "parameters": {
+        "jsCode": "const data = $input.first().json;\n\n// لو الـ AI رجع Object\nif (typeof data.output !== 'string') {\n  return [{\n    json: data.output ?? data\n  }];\n}\n\n// لو رجع String\nconst raw = data.output;\n\nconst start = raw.indexOf('{');\nconst end = raw.lastIndexOf('}');\n\nif (start === -1 || end === -1) {\n  throw new Error('No JSON found');\n}\n\nreturn [{\n  json: JSON.parse(raw.substring(start, end + 1))\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -3552,
+        -1216
+      ],
+      "id": "a5002716-90fe-460c-acb4-77faff568cfc",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Process the following input:\n\n{{ JSON.stringify($json, null, 2) }}",
+        "options": {
+          "systemMessage": "You are a Senior QA Engineer and Bug Reporting Assistant.\n\nYour job is to analyze reported software bugs and maintain ONE professional Jira Bug Draft throughout the workflow.\n\nThe goal is to produce bug reports that are immediately useful for developers, QA engineers, and product owners without requiring additional clarification whenever possible.\n\nThe user may provide:\n\n- Story Key\n- Bug description\n- Expected Result\n- Actual Result\n- Screenshot\n- Additional notes\n\n--------------------------------------------------\nPrimary Responsibilities\n--------------------------------------------------\n\n1. Analyze all user input.\n2. Analyze screenshots if provided.\n3. Identify the reported issue.\n4. Generate a professional Jira bug draft.\n5. Improve wording without changing the user's meaning.\n6. Expand short user reports into professional QA-ready bug reports.\n7. Infer reasonable end-user actions whenever they are obvious.\n8. Never invent technical implementation details.\n9. Determine Bug Type.\n10. Determine Severity.\n11. Determine Jira Priority.\n12. List only useful missing information.\n13. Never create a Jira issue yourself.\n\n--------------------------------------------------\nBug Type Classification\n--------------------------------------------------\n\nUse ONLY one of these values:\n\n- API Bug\n- Functional Bug\n- UI Bug\n- Validation Bug\n- Performance Bug\n- Security Bug\n- Integration Bug\n- Other\n\n\nRules:\n\n- HTTP failures, API failures or invalid API responses → API Bug\n- Missing validation or incorrect business validation → Validation Bug\n- UI layout, styling, alignment or visual issues → UI Bug\n- Slow response or timeout → Performance Bug\n- Authentication or authorization vulnerabilities → Security Bug\n- Issues involving communication between two or more systems or services such as CRM, Oracle, payment gateways, identity providers, SharePoint, or external APIs → Integration Bug\n- Everything else → Functional Bug\n\n\n--------------------------------------------------\nSeverity\n--------------------------------------------------\n\nUse ONLY one value:\n\n- Critical\n- Major\n- Moderate\n- Minor\n- Trivial\n\n\nGuidelines:\n\nCritical:\n- Production outage\n- Authentication completely blocked\n- Data loss\n- No workaround\n\nMajor:\n- Primary business flow blocked\n- Significant user impact\n\nModerate:\n- Partial functionality affected\n- Workaround exists\n\nMinor:\n- Minor functional issue\n\nTrivial:\n- Cosmetic issue\n- Typo\n- UI alignment\n\n\n--------------------------------------------------\nPriority\n--------------------------------------------------\n\nUse ONLY one value:\n\n- Highest\n- High\n- Medium\n- Low\n- Lowest\n\n\nGuidelines:\n\nHighest:\n- Production outage\n- Authentication completely blocked\n- Data loss\n- No workaround\n\nHigh:\n- Primary business flow blocked\n- Significant user impact\n\nMedium:\n- Partial functionality affected\n- Workaround exists\n\nLow:\n- Minor functional issue\n\nLowest:\n- Cosmetic issue\n- Typo\n- UI alignment\n\n\n--------------------------------------------------\nMODES\n--------------------------------------------------\n\nThe input always contains one mode:\n\n- generate\n- update\n- approve\n\n\nFollow ONLY the current mode.\n\nMode priority:\n\n- Generate creates a complete bug draft.\n- Update modifies only the requested fields.\n- Approve returns the current draft unchanged except status/action.\n\n\nAlways use ONLY the data provided in the current input.\n\nNever use memory.\n\nNever create multiple bug drafts.\n\n\n--------------------------------------------------\nGLOBAL OUTPUT SCHEMA CONTRACT\n--------------------------------------------------\n\nThe output schema must be identical across all modes:\n\nGenerate, Update, and Approve.\n\n\nAlways return the same fields with the exact same names.\n\n\nAllowed field names:\n\nstoryKey\nsummary\ndescription\nstepsToReproduce\nexpectedResult\nactualResult\nbugType\nseverity\npriority\nstatus\naction\nid\ncreatedAt\nupdatedAt\nmissingInformation\n\n\nNever use alternative field names.\n\nForbidden field names:\n\nstorykey\ntitle\nsteps\nexpected\nactual\nbug_type\nbugSeverity\njiraPriority\n\n\nThe schema structure must never change between modes.\n\n\nWorkflow fields:\n\n- status\n- action\n\n\nThese fields are controlled by the workflow and must always follow the mode rules.\n\n\nSystem-managed fields:\n\n- id\n- createdAt\n- updatedAt\n\n\nNever generate new values for system-managed fields.\n\nPreserve existing values exactly when they exist in currentDraft.\n\n\n--------------------------------------------------\nGENERATE\n--------------------------------------------------\n\nInput:\n\n- storyKey\n- bugDescription\n- expectedResult (optional)\n- actualResult (optional)\n- screenshot (optional)\n- notes (optional)\n\n\nTasks:\n\nAnalyze the reported bug.\n\nGenerate a complete professional Jira Bug Draft.\n\nImprove wording without changing meaning.\n\nExpand short descriptions into QA-ready bug reports.\n\nInfer only obvious user actions.\n\nNever invent technical implementation details.\n\n\nDetermine:\n\n- Bug Type\n- Severity\n- Priority\n\n\nAlways return:\n\nstatus = \"draft\"\n\naction = \"review\"\n\n--------------------------------------------------\nUPDATE\n--------------------------------------------------\n\nInput:\n\n- currentDraft\n- reviewerComment\n\n\nRules:\n\nTreat currentDraft as the source of truth.\n\nModify ONLY the fields explicitly requested by reviewerComment.\n\nPreserve every other field exactly.\n\nNever regenerate unchanged fields.\n\nNever rewrite unrelated content.\n\n\nWorkflow Fields:\n\nThe following fields are controlled by the workflow and must always be updated regardless of reviewerComment.\n\n\nAlways set:\n\nstatus = \"updated\"\n\naction = \"review\"\n\n\nDo not generate or modify updatedAt.\n\nThe workflow will manage this field automatically.\n\n\nFor all other fields:\n\nModify ONLY the fields explicitly requested in reviewerComment.\n\nPreserve every field that was not requested exactly as received in currentDraft.\n\n\n--------------------------------------------------\nAPPROVE\n--------------------------------------------------\n\nInput:\n\n- currentDraft\n\n\nRules:\n\nReturn currentDraft exactly using the same output schema.\n\nDo NOT regenerate anything.\n\nDo NOT rewrite anything.\n\nDo NOT improve wording.\n\n\nWorkflow Fields:\n\nAlways overwrite:\n\nstatus = \"approved\"\n\naction = \"create_bug\"\n\n\nAll other fields must remain exactly as received.\n\n\n--------------------------------------------------\nSummary Rules\n--------------------------------------------------\n\nREQUIRED.\n\nNever leave empty.\n\nWrite a professional Jira bug title.\n\nThe title should immediately explain the defect to a developer.\n\nClearly mention:\n\n- The affected feature.\n- The observed behavior.\n- The context whenever relevant.\n\n\nImprove the user's wording without changing the meaning.\n\nDo not simply repeat the user's sentence.\n\nDo not include assumptions.\n\nDo not include root causes.\n\nDo not include severity or priority.\n\n\nThe title should be specific enough that a developer understands the issue before opening the bug.\n\n\nExamples:\n\n\nGood:\n\nLogin button remains unresponsive after entering valid credentials\n\nPassword reset email is not sent after submitting a valid request\n\nCheckout page returns HTTP 500 after placing an order\n\nValidation message is missing when Email field is left empty\n\nUser profile image is not updated after saving changes\n\n\nBad:\n\nButton doesn't work\n\nLogin issue\n\nBug in Login\n\nError\n\nProblem\n\n\n--------------------------------------------------\nDescription Rules\n--------------------------------------------------\n\nREQUIRED.\n\nNever leave empty.\n\nWrite a professional Jira description.\n\nExplain:\n\n- What the user attempted to do.\n- What actually happened.\n- The impact on the user or business flow whenever it is obvious.\n\n\nWrite naturally as a QA engineer.\n\nDo not simply repeat the Summary.\n\nDo not mention assumptions.\n\nDo not mention possible root causes.\n\nDo not invent technical implementation details.\n\n\n--------------------------------------------------\nSteps To Reproduce Rules\n--------------------------------------------------\n\nREQUIRED whenever possible.\n\nThink like a QA engineer reproducing the issue from scratch.\n\nCover the complete user journey until the issue appears.\n\nInclude:\n\n- All obvious navigation steps.\n- Required user actions.\n- Required user input whenever obvious.\n\n\nThe last step must always describe observing the incorrect behavior.\n\n\nGenerate as many steps as necessary to fully reproduce the bug.\n\n\nA developer should be able to reproduce the bug using only these steps.\n\n\nNever invent:\n\n- API endpoints.\n- SQL queries.\n- Database values.\n- Internal implementation.\n- Root causes.\n- Browser versions.\n- Environment details not provided.\n\n\n--------------------------------------------------\nExpected Result Rules\n--------------------------------------------------\n\nDescribe the correct behavior the user should experience after performing the steps.\n\n\n--------------------------------------------------\nActual Result Rules\n--------------------------------------------------\n\nDescribe only what actually happens.\n\nDo not mention assumptions.\n\nDo not explain why the issue happens.\n\n\n--------------------------------------------------\nMissing Information Rules\n--------------------------------------------------\n\nInclude only information that would genuinely help reproduce or investigate the issue.\n\nIf nothing important is missing, return:\n\n[]\n\n\n--------------------------------------------------\nGeneral Rules\n--------------------------------------------------\n\nAlways preserve Story Key.\n\nNever use memory.\n\nNever invent technical facts.\n\nUse screenshots only as supporting evidence.\n\nReturn ALL fields defined by the Structured Output Parser.\n\nNever return Markdown.\n\nNever wrap the response inside ```json.\n\nNever explain your reasoning.\n\nReturn ONLY the structured object."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -3056,
+        -1568
+      ],
+      "id": "8dd70667-f0b4-4c77-87ca-403521653bc3",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemma-4-26b-a4b-it",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        -3040,
+        -1360
+      ],
+      "id": "5157a86f-e76f-48f6-9de2-79b0922a3294",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "n6dmm3iCGGASaZes",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "dataTableId": {
+          "__rl": true,
+          "value": "zG5gNeKpKYX4i5f6",
+          "mode": "list",
+          "cachedResultName": "Bugs-Draft",
+          "cachedResultUrl": "/projects/SrGXnVQVZj9usMAb/datatables/zG5gNeKpKYX4i5f6"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "status": "={{ $json.status }}",
+            "action": "={{ $json.action }}",
+            "title": "={{ $json.summary ?? $json.title }}",
+            "description": "={{$json.description}}",
+            "steps": "={{\nArray.isArray($json.stepsToReproduce)\n  ? $json.stepsToReproduce.map((s,i)=>`${i+1}. ${s}`).join('\\n')\n  : $json.steps ?? ''\n}}",
+            "actual": "={{\nArray.isArray($json.actualResult)\n  ? $json.actualResult.join('\\n')\n  : ($json.actualResult ?? $json.actual)\n}}",
+            "priority": "={{$json.priority}}",
+            "expected": "={{\nArray.isArray($json.expectedResult)\n  ? $json.expectedResult.join('\\n')\n  : ($json.expectedResult ?? $json.expected)\n}}",
+            "storykey": "={{ $json.storyKey ?? $json.storykey }}",
+            "severity": "={{$json.severity}}",
+            "bugType": "={{$json.bugType}}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "storykey",
+              "displayName": "storykey",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "title",
+              "displayName": "title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "description",
+              "displayName": "description",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "steps",
+              "displayName": "steps",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "expected",
+              "displayName": "expected",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "actual",
+              "displayName": "actual",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "priority",
+              "displayName": "priority",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "action",
+              "displayName": "action",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "severity",
+              "displayName": "severity",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "bugType",
+              "displayName": "bugType",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false,
+          "column": [
+            {
+              "name": "status"
+            },
+            {
+              "name": "action"
+            },
+            {
+              "name": "storyKey"
+            },
+            {
+              "name": "title"
+            },
+            {
+              "name": "title"
+            },
+            {
+              "name": "description"
+            },
+            {
+              "name": "steps"
+            },
+            {
+              "name": "expectedResult"
+            }
+          ]
+        },
+        "options": {
+          "optimizeBulk": false
+        }
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        -2352,
+        -1424
+      ],
+      "id": "0c2d8eec-3bcb-47ef-8d29-33ad4fa657bf",
+      "name": "bug Draft"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "value": "zG5gNeKpKYX4i5f6",
+          "mode": "list",
+          "cachedResultName": "Bugs-Draft",
+          "cachedResultUrl": "/projects/SrGXnVQVZj9usMAb/datatables/zG5gNeKpKYX4i5f6"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "storykey",
+              "keyValue": "={{ $json.storyKey }}"
+            },
+            {
+              "keyValue": "2"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        -3696,
+        -1136
+      ],
+      "id": "94dae424-2717-462f-b0a2-10c361cb8752",
+      "name": "BugDraft2"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "value": "zG5gNeKpKYX4i5f6",
+          "mode": "list",
+          "cachedResultName": "Bugs-Draft",
+          "cachedResultUrl": "/projects/SrGXnVQVZj9usMAb/datatables/zG5gNeKpKYX4i5f6"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "storykey",
+              "keyValue": "={{ $json.storyKey }}"
+            }
+          ]
+        },
+        "limit": 1,
+        "orderBy": true,
+        "orderByColumn": "updatedAt"
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        -3712,
+        -928
+      ],
+      "id": "a6a5f33a-7f09-4f36-ba7e-12249e8cd902",
+      "name": "Draft3"
+    },
+    {
+      "parameters": {
         "method": "POST",
         "url": "https://abdotalaat529.atlassian.net/rest/api/3/issueLink",
         "authentication": "predefinedCredentialType",
         "nodeCredentialType": "jiraSoftwareCloudApi",
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n  \"type\": {\n    \"name\": \"Relates\"\n  },\n  \"inwardIssue\": {\n    \"key\": \"{{ $('AI Agent').item.json.output.storyKey }}\"\n  },\n  \"outwardIssue\": {\n    \"key\": \"{{ $('Create an issue').item.json.key }}\"\n  }\n}",
+        "jsonBody": "={\n  \"type\": {\n    \"name\": \"Relates\"\n  },\n  \"inwardIssue\": {\n    \"key\": \"{{ $('Split - TC to Items').item.json.storykey }}\"\n  },\n  \"outwardIssue\": {\n    \"key\": \"{{ $json.key }}\"\n  }\n}",
         "options": {}
       },
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
       "position": [
-        -688,
-        -656
+        -2912,
+        -944
       ],
-      "id": "3907b722-dd7c-4c77-8b60-732acaa42e3c",
+      "id": "3bfb1ab8-15ac-4b67-96bb-1df67e1c6a48",
       "name": "HTTP Request",
       "credentials": {
         "jiraSoftwareCloudApi": {
@@ -165,38 +516,28 @@
       }
     },
     {
-      "parameters": {
-        "conditions": {
-          "options": {
-            "caseSensitive": true,
-            "leftValue": "",
-            "typeValidation": "strict",
-            "version": 3
-          },
-          "conditions": [
-            {
-              "id": "0f9eff70-27c1-46e8-8bd1-d3a7791f46cc",
-              "leftValue": "={{ $json.output.action }}",
-              "rightValue": "create_bug",
-              "operator": {
-                "type": "string",
-                "operation": "equals",
-                "name": "filter.operator.equals"
-              }
-            }
-          ],
-          "combinator": "and"
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.if",
-      "typeVersion": 2.3,
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
       "position": [
-        -1232,
-        -624
+        -3376,
+        -1328
       ],
-      "id": "f932cce6-bff7-4de8-afb4-7576e8a53136",
-      "name": "If"
+      "id": "30d27118-baf5-440d-a21d-6b3c53072573",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "jsCode": "const input = $input.all();\n\nconst msg = input[0].json;\nconst draft = input[1].json;\n\nreturn [\n  {\n    json: {\n      mode: \"update\",\n      reviewerComment: msg.comment,\n      currentDraft: draft\n    }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -3216,
+        -1440
+      ],
+      "id": "bf4fa222-09e1-4a47-8595-0e66331d934c",
+      "name": "Code in JavaScript2"
     }
   ],
   "pinData": {},
@@ -205,47 +546,83 @@
       "main": [
         [
           {
-            "node": "AI Agent",
+            "node": "Parse Message",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Ollama Chat Model": {
-      "ai_languageModel": [
+    "Code in JavaScript1": {
+      "main": [
+        [
+          {
+            "node": "bug Draft",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
         [
           {
             "node": "AI Agent",
-            "type": "ai_languageModel",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "BugDraft2",
+            "type": "main",
             "index": 0
           },
           {
-            "node": "Structured Output Parser",
-            "type": "ai_languageModel",
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Draft3",
+            "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Simple Memory": {
-      "ai_memory": [
+    "Split - TC to Items": {
+      "main": [
         [
           {
-            "node": "AI Agent",
-            "type": "ai_memory",
+            "node": "Create an issue",
+            "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Structured Output Parser": {
-      "ai_outputParser": [
+    "Parse Message": {
+      "main": [
         [
           {
-            "node": "AI Agent",
-            "type": "ai_outputParser",
+            "node": "Switch",
+            "type": "main",
             "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
           }
         ]
       ]
@@ -254,7 +631,40 @@
       "main": [
         [
           {
-            "node": "If",
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "BugDraft2": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Draft3": {
+      "main": [
+        [
+          {
+            "node": "Split - TC to Items",
             "type": "main",
             "index": 0
           }
@@ -272,11 +682,22 @@
         ]
       ]
     },
-    "If": {
+    "Merge": {
       "main": [
         [
           {
-            "node": "Create an issue",
+            "node": "Code in JavaScript2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript2": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
             "type": "main",
             "index": 0
           }
@@ -290,7 +711,7 @@
     "binaryMode": "separate",
     "availableInMCP": false
   },
-  "versionId": "f015e2d8-01eb-4780-9c24-9f89ee872aeb",
+  "versionId": "15400c42-561d-4e8d-ba93-63003c51dffe",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "cd71243aed4815aa0017d76c74a928810dd23908794521c9e59a0736dedcf423"

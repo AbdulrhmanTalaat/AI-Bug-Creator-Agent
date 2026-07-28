@@ -5,14 +5,18 @@
 <h1 align="center">🚀 AI Bug Creator Agent</h1>
 
 <p align="center">
-Automatically transform user bug descriptions into structured Jira bug reports using AI.<br>
-Powered by <strong>n8n</strong>, <strong>Ollama</strong>, and <strong>Llama 3.1</strong>.
+AI-powered workflow to generate, review, modify, and publish Jira bug reports.
+</p>
+
+<p align="center">
+Built with <strong>n8n</strong> • Supports <strong>Google Gemini</strong> & <strong>Ollama (Llama 3.1)</strong>
 </p>
 
 <p align="center">
 
-![Last Commit](https://img.shields.io/github/last-commit/AbdulrhmanTalaat/AI-Bug-Creator-Agent)
-![Repo Size](https://img.shields.io/github/repo-size/AbdulrhmanTalaat/AI-Bug-Creator-Agent)
+![GitHub last commit](https://img.shields.io/github/last-commit/AbdulrhmanTalaat/AI-Bug-Creator-Agent?style=for-the-badge)
+![GitHub repo size](https://img.shields.io/github/repo-size/AbdulrhmanTalaat/AI-Bug-Creator-Agent?style=for-the-badge)
+![GitHub stars](https://img.shields.io/github/stars/AbdulrhmanTalaat/AI-Bug-Creator-Agent?style=for-the-badge)
 
 </p>
 
@@ -20,55 +24,66 @@ Powered by <strong>n8n</strong>, <strong>Ollama</strong>, and <strong>Llama 3.1<
 
 # 📖 Overview
 
-**AI Bug Creator Agent** is an AI-powered automation workflow built with **n8n** that converts natural language bug reports into structured Jira issues.
+**AI Bug Creator Agent** is an AI-powered automation workflow built with **n8n** that helps QA Engineers generate high-quality Jira bug reports through an AI-assisted draft and approval process.
 
-Instead of manually filling bug report fields, users simply describe the problem in plain language. The AI Agent analyzes the description, extracts the required information, formats the output into a structured JSON object, and automatically creates a Jira Bug through the Jira API.
+Instead of manually writing a complete bug report, users only need to provide:
 
-This workflow helps QA Engineers, Developers, and Support Teams report bugs faster while ensuring consistency and completeness.
+- Story Number
+- A short bug title
+
+The workflow automatically routes the request through one of three actions:
+
+- **Generate** → AI creates a complete bug report draft and stores it in the database.
+- **Modify** → AI updates an existing draft based on user feedback.
+- **Approve** → The latest approved draft is published as a Jira Bug.
+
+Unlike traditional AI bug creators, this workflow introduces a **draft-review cycle**, allowing users to iteratively refine AI-generated bug reports before publishing them to Jira.
 
 ---
 
 # ✨ Features
 
--  AI-powered bug understanding
--  Accept bug reports in natural language
--  Extract bug title and description automatically
--  Generate structured JSON output
--  Automatically create Jira Bug Issues
--  Built with n8n AI Agent
--  Supports Llama 3.1 running locally via Ollama
--  Create bugs through Jira REST API
--  Fully automated workflow
--  Easy to customize
+- AI-powered bug generation
+- Chat-based workflow
+- Generate complete bug reports from a short bug title
+- Draft-first workflow
+- Store bug drafts in a database
+- Modify drafts using natural language
+- Human approval before publishing
+- Automatically create Jira Bug Issues
+- Supports Google Gemini and Ollama (Llama 3.1)
+- Built with n8n AI Agent
+- Jira REST API integration
+- Extensible architecture
 
 ---
 
 # 🏗 Workflow Architecture
 
 ```text
-User
- │
- ▼
-Chat Trigger
- │
- ▼
-AI Agent
-(Llama 3.1 via Ollama)
- │
- ▼
-Analyze Bug Description
- │
- ▼
-Structured Output Parser
- │
- ▼
-Validate Required Fields
- │
- ▼
-Create Jira Bug
- │
- ▼
-HTTP Request (Optional)
+                 Chat Trigger
+                      │
+                      ▼
+                Parse Message
+                      │
+                      ▼
+                    Switch
+             ┌────────┼────────┐
+             │        │        │
+             ▼        ▼        ▼
+        Generate   Modify   Approve
+             │        │        │
+             ▼        ▼        ▼
+         AI Agent  Load Draft Load Draft
+             │        │        │
+             ▼        ▼        ▼
+        Save Draft   Merge   Create Jira Issue
+        (Database)     │          │
+                       ▼          ▼
+                  AI Agent   HTTP Response
+                       │
+                       ▼
+                  Save Draft
 ```
 
 ---
@@ -79,6 +94,8 @@ HTTP Request (Optional)
   <img src="screenshots/workflow.png" width="100%">
 </p>
 
+The workflow follows a **draft-first** approach. AI generates a complete bug report, users can iteratively refine it through natural language, and only approved drafts are published to Jira.
+
 ---
 
 # ⚙️ Tech Stack
@@ -86,12 +103,18 @@ HTTP Request (Optional)
 | Technology | Purpose |
 |------------|---------|
 | n8n | Workflow Automation |
-| AI Agent | Natural Language Understanding |
-| Ollama | Local AI Runtime |
-| Llama 3.1 | Large Language Model |
-| Structured Output Parser | JSON Validation |
-| Jira Cloud API | Create Jira Bugs |
-| HTTP Request | External Integration |
+| AI Agent | Bug Report Generation & Draft Refinement |
+| Google Gemini *(Optional)* | Cloud Large Language Model |
+| Ollama *(Optional)* | Local AI Runtime |
+| Llama 3.1 *(via Ollama)* | Local Large Language Model |
+| Database | Store and Manage Bug Drafts |
+| Jira Cloud API | Create Jira Bug Issues |
+| HTTP Request | External Integrations & Notifications |
+
+> **AI Model Flexibility**
+>
+> This workflow is model-agnostic.
+> It has been tested with **Google Gemini** and **Llama 3.1 via Ollama**, but any LLM supported by n8n can be integrated with minimal changes.
 
 ---
 
@@ -115,9 +138,18 @@ workflow/AI Bug Creator Agent.json
 
 ---
 
-## 3. Install Ollama
+## 3. Configure an AI Model
 
-Install Ollama and pull the Llama model.
+Choose one of the supported AI providers.
+
+### Option A — Google Gemini
+
+- Create a Gemini API Key.
+- Configure the Google Gemini Chat Model node in n8n.
+
+### Option B — Ollama
+
+Install Ollama locally.
 
 ```bash
 ollama pull llama3.1:8b
@@ -141,51 +173,175 @@ Configure:
 
 ---
 
-## 5. Run the Workflow
+## 5. Configure the Draft Database
 
-Simply describe a bug.
+Configure your preferred database to store bug drafts.
 
-Example:
-
-```text
-When I click the Login button after entering valid credentials, nothing happens. No error message is displayed.
-```
-
-The workflow will automatically:
-
-- Analyze the bug description
-- Extract bug details
-- Generate structured output
-- Create a Jira Bug
-- Send the result to the configured endpoint (optional)
+Each draft should be linked to its **Story Number** so it can be retrieved during the **Modify** and **Approve** steps.
 
 ---
 
-# 💬 Example
+## 6. Run the Workflow
 
-### Input
-
-```text
-When I click Save after editing my profile, the page keeps loading forever and no changes are saved.
-```
-
-### Output
-
-- Detect Bug Title
-- Generate Detailed Description
-- Validate Required Fields
-- Create Jira Bug
-- Return Success Response
+The workflow supports three chat commands.
 
 ---
 
-# 📄 Example Output
+### 🟢 Generate
+
+The user starts by asking the AI to generate a bug draft.
+
+**Input**
+
+```text
+Generate
+
+Story: SDB-123
+
+Title:
+Login button does nothing after entering valid credentials.
+```
+
+**Workflow**
+
+- Parse the user message
+- Generate a complete bug report using AI
+- Store the generated draft in the database
+
+---
+
+### 🟠 Modify
+
+The user can request changes to an existing draft.
+
+**Input**
+
+```text
+Modify
+
+Story: SDB-123
+
+Please mention that the issue only occurs in Microsoft Edge.
+```
+
+**Workflow**
+
+- Retrieve the latest draft
+- Merge the draft with the user's requested changes
+- Update the bug report using AI
+- Save the updated draft
+
+---
+
+### 🔵 Approve
+
+Once the user is satisfied with the draft, it can be published to Jira.
+
+**Input**
+
+```text
+Approve
+
+Story: SDB-123
+```
+
+**Workflow**
+
+- Retrieve the latest draft
+- Create the Jira Bug
+- Return the created Jira Issue
+
+---
+
+# 💬 Example Workflow
+
+## Step 1 — Generate
+
+### User
+
+```text
+Generate
+
+Story: SDB-123
+
+Title:
+Profile changes are not saved.
+```
+
+### AI Result
+
+- Creates a complete bug report
+- Saves the report as a draft
+
+---
+
+## Step 2 — Modify
+
+### User
+
+```text
+Modify
+
+Story: SDB-123
+
+Add that the issue only occurs in Firefox.
+```
+
+### AI Result
+
+- Retrieves the latest draft
+- Updates the bug report
+- Saves the new draft
+
+---
+
+## Step 3 — Approve
+
+### User
+
+```text
+Approve
+
+Story: SDB-123
+```
+
+### AI Result
+
+- Retrieves the latest draft
+- Creates the Jira Bug
+- Returns the created Jira Issue ID
+
+---
+
+# 📄 Example Draft
 
 ```json
 {
-  "summary": "Profile cannot be saved after editing",
+  "storyNumber": "SDB-123",
+  "summary": "Profile changes are not saved",
   "description": "When editing a user profile and clicking the Save button, the page remains in a loading state indefinitely. No confirmation or error message is displayed, and the changes are not persisted.",
-  "issueType": "Bug"
+  "stepsToReproduce": [
+    "Open Profile page",
+    "Edit profile information",
+    "Click Save"
+  ],
+  "expectedResult": "Profile changes should be saved successfully.",
+  "actualResult": "The page remains loading indefinitely and no changes are saved.",
+  "issueType": "Bug",
+  "status": "Draft"
+}
+```
+
+---
+
+# 📄 Example After Approval
+
+```json
+{
+  "storyNumber": "SDB-123",
+  "jiraIssueKey": "BUG-452",
+  "jiraIssueUrl": "https://your-domain.atlassian.net/browse/BUG-452",
+  "status": "Created"
 }
 ```
 
@@ -196,41 +352,66 @@ When I click Save after editing my profile, the page keeps loading forever and n
 ```text
 .
 ├── README.md
+├── LICENSE
 ├── .gitignore
 ├── workflow/
 │   └── AI Bug Creator Agent.json
-└── screenshots/
-    ├── banner.png
-    └── workflow.png
+├── screenshots/
+│   ├── banner.png
+│   └── workflow.png
+└── docs/
 ```
 
 ---
 
 # 🎯 Project Scope
 
-This project demonstrates how AI can automate the bug reporting process by converting natural language descriptions into structured Jira Bug Issues.
+This project demonstrates how AI can automate the complete bug reporting lifecycle using a draft-first workflow.
 
-The workflow is lightweight, easy to extend, and can be integrated with different issue trackers or AI models.
+Instead of immediately publishing AI-generated bug reports, users can:
+
+- Generate a draft
+- Review the generated content
+- Modify the draft using natural language
+- Approve the final version
+- Publish it automatically to Jira
+
+This approach improves bug quality while keeping the reporting process fast and efficient.
+
+The workflow is lightweight, extensible, and can easily be integrated with different databases, issue trackers, or Large Language Models.
 
 ---
 
 # 🚀 Future Improvements
 
 - Support screenshots and attachments
-- Auto-detect bug priority
+- Version history for bug drafts
+- AI-generated reproduction steps
+- Auto-detect priority
 - Predict severity level
-- Suggest labels/components
+- Suggest labels and components
 - Duplicate bug detection
 - Multi-language support
-- Integration with Slack & Microsoft Teams
+- Slack integration
+- Microsoft Teams integration
+- Draft approval notifications
+- Role-based approval workflow
+- AI-generated test cases from bug reports
 
 ---
 
 # 🤝 Contributing
 
-Contributions are welcome.
+Contributions are always welcome!
 
-Feel free to fork this repository, open an Issue, or submit a Pull Request.
+If you'd like to improve this project:
+
+1. Fork the repository.
+2. Create a feature branch.
+3. Commit your changes.
+4. Open a Pull Request.
+
+Bug reports, feature requests, and suggestions are greatly appreciated.
 
 ---
 
@@ -240,6 +421,6 @@ Feel free to fork this repository, open an Issue, or submit a Pull Request.
 
 Senior Software Test Engineer
 
-GitHub: https://github.com/AbdulrhmanTalaat
+[![GitHub](https://img.shields.io/badge/GitHub-AbdulrhmanTalaat-181717?style=for-the-badge&logo=github)](https://github.com/AbdulrhmanTalaat)
 
-If you found this project useful, consider giving it a ⭐.
+If you found this project useful, consider giving it a ⭐ on GitHub.
