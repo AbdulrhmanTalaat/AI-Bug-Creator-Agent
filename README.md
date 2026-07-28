@@ -5,19 +5,24 @@
 <h1 align="center">🚀 AI Bug Creator Agent</h1>
 
 <p align="center">
-AI-powered workflow to generate, review, modify, and publish Jira bug reports.
+  AI-powered workflow to generate, review, modify, and publish Jira bug reports.
 </p>
 
 <p align="center">
-Built with <strong>n8n</strong> • Supports <strong>Google Gemini</strong> & <strong>Ollama (Llama 3.1)</strong>
+  Built with <strong>n8n</strong> • Supports <strong>Google Gemini</strong> &amp; <strong>Ollama (Llama 3.1)</strong>
 </p>
 
 <p align="center">
+  <img src="https://img.shields.io/github/last-commit/AbdulrhmanTalaat/AI-Bug-Creator-Agent?style=for-the-badge" alt="Last Commit">
+  <img src="https://img.shields.io/github/repo-size/AbdulrhmanTalaat/AI-Bug-Creator-Agent?style=for-the-badge" alt="Repository Size">
+  <img src="https://img.shields.io/github/stars/AbdulrhmanTalaat/AI-Bug-Creator-Agent?style=for-the-badge" alt="GitHub Stars">
+</p>
 
-![GitHub last commit](https://img.shields.io/github/last-commit/AbdulrhmanTalaat/AI-Bug-Creator-Agent?style=for-the-badge)
-![GitHub repo size](https://img.shields.io/github/repo-size/AbdulrhmanTalaat/AI-Bug-Creator-Agent?style=for-the-badge)
-![GitHub stars](https://img.shields.io/github/stars/AbdulrhmanTalaat/AI-Bug-Creator-Agent?style=for-the-badge)
-
+<p align="center">
+  <img src="https://img.shields.io/badge/n8n-Workflow%20Automation-EA4B71?style=flat-square&logo=n8n&logoColor=white" alt="n8n">
+  <img src="https://img.shields.io/badge/Google-Gemini-4285F4?style=flat-square&logo=google&logoColor=white" alt="Google Gemini">
+  <img src="https://img.shields.io/badge/Ollama-Llama%203.1-000000?style=flat-square" alt="Ollama">
+  <img src="https://img.shields.io/badge/Jira-Cloud-0052CC?style=flat-square&logo=jira&logoColor=white" alt="Jira Cloud">
 </p>
 
 ---
