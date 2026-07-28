@@ -15,7 +15,6 @@
 <p align="center">
   <img src="https://img.shields.io/github/last-commit/AbdulrhmanTalaat/AI-Bug-Creator-Agent?style=for-the-badge" alt="Last Commit">
   <img src="https://img.shields.io/github/repo-size/AbdulrhmanTalaat/AI-Bug-Creator-Agent?style=for-the-badge" alt="Repository Size">
-  <img src="https://img.shields.io/github/stars/AbdulrhmanTalaat/AI-Bug-Creator-Agent?style=for-the-badge" alt="GitHub Stars">
 </p>
 
 <p align="center">
