@@ -9,7 +9,7 @@
 </p>
 
 <p align="center">
-  Built with <strong>n8n</strong> • Supports <strong>Google Gemini</strong> &amp; <strong>Ollama (Llama 3.1)</strong>
+Built with <strong>n8n</strong> • <strong>Model-Agnostic</strong> • Supports <strong>Google Gemini</strong> &amp; <strong>Ollama (Llama 3.1)</strong>
 </p>
 
 <p align="center">
@@ -43,6 +43,19 @@ The workflow automatically routes the request through one of three actions:
 
 Unlike traditional AI bug creators, this workflow introduces a **draft-review cycle**, allowing users to iteratively refine AI-generated bug reports before publishing them to Jira.
 
+---
+## 📑 Table of Contents
+
+- Overview
+- Features
+- Workflow
+- Tech Stack
+- Installation
+- Usage
+- Examples
+- Repository Structure
+- Future Improvements
+- Contributing
 ---
 
 # ✨ Features
@@ -144,22 +157,45 @@ workflow/AI Bug Creator Agent.json
 
 ## 3. Configure an AI Model
 
-Choose one of the supported AI providers.
+This workflow is **model-agnostic** and supports multiple AI providers.
 
-### Option A — Google Gemini
+Choose the provider that best fits your environment.
 
-- Create a Gemini API Key.
-- Configure the Google Gemini Chat Model node in n8n.
+### Supported AI Providers
 
-### Option B — Ollama
+```text
+Google Gemini (Cloud)
+        OR
+Ollama + Llama 3.1 (Local)
+```
 
-Install Ollama locally.
+### Google Gemini (Cloud)
+
+Use Google Gemini if you prefer a managed cloud-based AI service.
+
+**Setup**
+
+- Create a Google Gemini API Key.
+- Configure the **Google Gemini Chat Model** node in n8n.
+- Select your preferred Gemini model (e.g., Gemini 2.5 Flash).
+
+---
+
+### Ollama + Llama 3.1 (Local)
+
+Use Ollama if you want to run the workflow completely offline.
+
+Install Ollama and pull the Llama model.
 
 ```bash
 ollama pull llama3.1:8b
 ```
 
-Connect the Ollama Chat Model node to the AI Agent.
+Then connect the **Ollama Chat Model** node to the AI Agent.
+
+> **Note**
+>
+> Since the workflow is model-agnostic, you can also replace these providers with any LLM supported by n8n, such as OpenAI or Anthropic Claude.
 
 ---
 
